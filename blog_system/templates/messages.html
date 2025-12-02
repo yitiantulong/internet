@@ -1,0 +1,58 @@
+<div class="d-flex flex-column gap-3">
+    <div class="d-flex align-items-center justify-content-between">
+        <h1 class="h4 mb-0"><i class="fa-regular fa-comments me-2 text-primary"></i>私信</h1>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newMessageModal">
+            <i class="fa-solid fa-plus me-1"></i>新建私信
+        </button>
+    </div>
+    <div class="row g-3">
+        <div class="col-12 col-lg-4">
+            <section class="post-card">
+                <h2 class="h6 mb-3"><i class="fa-solid fa-address-book me-2 text-primary"></i>会话列表</h2>
+                <div id="conversationList" data-role="conversation-list">
+                    {contacts_html}
+                </div>
+            </section>
+        </div>
+        <div class="col-12 col-lg-8">
+            <section class="post-card">
+                <div id="conversationView">
+                    <div class="text-center text-muted py-5">
+                        <i class="fa-regular fa-comments fa-3x mb-3 d-block"></i>
+                        <p>选择左侧会话开始对话</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="newMessageModal" tabindex="-1" aria-labelledby="newMessageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newMessageModalLabel">新建私信</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="newMessageForm">
+                    <div class="mb-3">
+                        <label for="new-message-target" class="form-label">收件人用户名</label>
+                        <input type="text" class="form-control" id="new-message-target" name="target" required placeholder="输入收件人用户名">
+                        <div class="invalid-feedback" id="target-feedback"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="new-message-content" class="form-label">消息内容</label>
+                        <textarea id="new-message-content" class="form-control" name="content" rows="5" required placeholder="输入消息内容"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="sendNewMessageBtn">
+                    <i class="fa-solid fa-paper-plane-top me-1"></i>发送
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

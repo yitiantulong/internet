@@ -1,0 +1,40 @@
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-xl-5">
+        <section class="form-section">
+            <h1 class="h4 mb-3 text-center"><i class="fa-regular fa-pen-to-square me-2 text-primary"></i>创建新账号</h1>
+            {message_block}
+            <form method="post" action="/register" class="needs-validation" novalidate>
+                <div class="mb-3">
+                    <label for="username" class="form-label">用户名</label>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名" required>
+                </div>
+                <div class="mb-3">
+                    <label for="display_name" class="form-label">显示昵称</label>
+                    <input type="text" class="form-control" id="display_name" name="display_name" placeholder="选填，用于展示">
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">邮箱</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="选填，用于通知订阅">
+                </div>
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <label for="password" class="form-label">密码</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="设置登录密码" required>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label for="confirm_password" class="form-label">确认密码</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="再次输入密码" required>
+                    </div>
+                </div>
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-user-plus me-1"></i>注册账号
+                    </button>
+                </div>
+            </form>
+            <p class="text-muted text-center mt-3 mb-0">
+                已有账号？<a href="/login">立即登录</a>
+            </p>
+        </section>
+    </div>
+</div>

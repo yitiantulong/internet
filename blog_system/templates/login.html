@@ -1,0 +1,26 @@
+<div class="row justify-content-center">
+    <div class="col-12 col-md-7 col-xl-4">
+        <section class="form-section">
+            <h1 class="h4 mb-3 text-center"><i class="fa-regular fa-user me-2 text-primary"></i>欢迎回来</h1>
+            {message_block}
+            <form method="post" action="/login" class="needs-validation" novalidate>
+                <div class="mb-3">
+                    <label for="login-username" class="form-label">用户名</label>
+                    <input type="text" class="form-control" id="login-username" name="username" placeholder="请输入用户名" required>
+                </div>
+                <div class="mb-3">
+                    <label for="login-password" class="form-label">密码</label>
+                    <input type="password" class="form-control" id="login-password" name="password" placeholder="请输入密码" required>
+                </div>
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-right-to-bracket me-1"></i>登录
+                    </button>
+                </div>
+            </form>
+            <p class="text-muted text-center mt-3 mb-0">
+                还没有账号？<a href="/register">立即注册</a>
+            </p>
+        </section>
+    </div>
+</div>

@@ -1,0 +1,36 @@
+<div class="row g-3">
+    <div class="col-12 col-lg-3">
+        <section class="post-card">
+            <h2 class="h6 mb-3"><i class="fa-solid fa-envelope me-2 text-primary"></i>邮箱</h2>
+            <div class="list-group list-group-flush">
+                <a href="/messages?view=inbox" class="list-group-item list-group-item-action d-flex align-items-center gap-2" data-view="inbox">
+                    <i class="fa-solid fa-inbox text-primary"></i>
+                    <span>收信箱</span>
+                </a>
+                <a href="/messages?view=compose" class="list-group-item list-group-item-action d-flex align-items-center gap-2" data-view="compose">
+                    <i class="fa-regular fa-pen-to-square text-success"></i>
+                    <span>发送信件</span>
+                </a>
+                <a href="/messages?view=sent" class="list-group-item list-group-item-action d-flex align-items-center gap-2" data-view="sent">
+                    <i class="fa-solid fa-paper-plane text-info"></i>
+                    <span>已发送</span>
+                </a>
+                <a href="/messages?view=trash" class="list-group-item list-group-item-action d-flex align-items-center gap-2" data-view="trash">
+                    <i class="fa-solid fa-trash text-danger"></i>
+                    <span>垃圾箱</span>
+                </a>
+            </div>
+        </section>
+    </div>
+    <div class="col-12 col-lg-9">
+        <section class="post-card">
+            <div id="mailboxContent" data-user-id="{current_user_id}" data-receiver="{receiver_username}">
+                <div class="text-center text-muted py-5">
+                    <i class="fa-solid fa-spinner fa-spin fa-3x mb-3 d-block"></i>
+                    <p>加载中...</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+

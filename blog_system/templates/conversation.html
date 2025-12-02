@@ -1,0 +1,30 @@
+<div class="row g-4">
+    <div class="col-12 col-xl-8">
+        <section class="conversation-section">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h1 class="h5 mb-0"><i class="fa-regular fa-comments me-2 text-primary"></i>{page_title}</h1>
+                <a class="btn btn-sm btn-outline-secondary" href="/messages">
+                    <i class="fa-solid fa-arrow-left me-1"></i>返回列表
+                </a>
+            </div>
+            {conversation_html}
+        </section>
+    </div>
+    <div class="col-12 col-xl-4">
+        <section class="form-section">
+            <h2 class="h6 mb-3"><i class="fa-solid fa-paper-plane me-2 text-success"></i>发送新消息</h2>
+            <form method="post" action="/messages/send" class="needs-validation" novalidate>
+                <input type="hidden" name="target" value="{target_username}">
+                <div class="mb-3">
+                    <label for="conversation-content" class="form-label">消息内容</label>
+                    <textarea id="conversation-content" class="form-control" name="content" rows="5" required placeholder="输入消息内容"></textarea>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-paper-plane-top me-1"></i>发送
+                    </button>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>

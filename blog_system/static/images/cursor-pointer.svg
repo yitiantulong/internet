@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
+  <circle cx="14" cy="14" r="9.5" fill="url(#grad-pointer)" stroke="#1F2937" stroke-width="1.2"/>
+  <circle cx="14" cy="14" r="4" fill="#ffffff" stroke="#1F2937" stroke-width="1.2"/>
+  <defs>
+    <linearGradient id="grad-pointer" x1="6" y1="6" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#38BDF8"/>
+      <stop offset="1" stop-color="#A855F7"/>
+    </linearGradient>
+  </defs>
+</svg>
+

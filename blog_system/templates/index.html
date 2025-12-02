@@ -1,0 +1,73 @@
+<div class="row g-4">
+    <div class="col-12">
+        <section class="hero-banner">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-8">
+                    <span class="badge-soft mb-3 d-inline-flex align-items-center gap-2">
+                        <i class="fa-solid fa-star"></i> NeoBlog · 用创作连接世界
+                    </span>
+                    <h1 class="display-6 fw-semibold mb-3">{welcome_message}</h1>
+                    <p class="lead mb-4">{auth_message}</p>
+                    <div class="hero-actions d-flex flex-wrap gap-2">
+                        {auth_action}
+                    </div>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <div class="hero-illustration mx-auto mx-lg-0">
+                        <div class="orbit orbit-one"></div>
+                        <div class="orbit orbit-two"></div>
+                        <div class="planet-shadow"></div>
+                        <i class="fa-solid fa-pen-nib hero-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-12 col-xl-4 order-2 order-xl-1">
+        <section class="search-card">
+            <h2 class="h6 mb-3 text-uppercase text-muted"><i class="fa-solid fa-magnifying-glass me-2"></i>文章筛选</h2>
+            <form method="get" action="/" class="row g-3">
+                <div class="col-12">
+                    <label for="searchKeyword" class="form-label">关键词</label>
+                    <input id="searchKeyword" type="text" class="form-control" name="q" placeholder="搜索标题或正文" value="{search_keyword}">
+                </div>
+                <div class="col-12 col-md-7">
+                    <label for="categorySelect" class="form-label">分类</label>
+                    <select id="categorySelect" class="form-select" name="category">
+                        {search_category_options}
+                    </select>
+                </div>
+                <div class="col-12 col-md-5 d-grid align-items-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-filter me-1"></i>筛选
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <aside class="post-card mt-4 mt-xl-0 d-flex flex-column gap-3">
+            <div class="d-flex align-items-center justify-content-between">
+                <h2 class="h6 mb-0"><i class="fa-solid fa-bell me-2 text-warning"></i>订阅推送</h2>
+                <a class="btn btn-sm btn-outline-primary" href="/subscriptions">
+                    查看全部
+                </a>
+            </div>
+            <div class="d-flex flex-column gap-3">
+                {subscription_posts_html}
+            </div>
+        </aside>
+    </div>
+
+    <div class="col-12 col-xl-8 order-1 order-xl-2">
+        <section class="d-flex flex-column gap-4">
+            <div class="d-flex align-items-center justify-content-between">
+                <h2 class="h5 mb-0"><i class="fa-solid fa-compass me-2 text-primary"></i>最新文章</h2>
+                <span class="text-muted small"><i class="fa-regular fa-clock me-1"></i>实时刷新</span>
+            </div>
+            <div class="d-flex flex-column gap-4">
+                {posts_html}
+            </div>
+        </section>
+    </div>
+</div>

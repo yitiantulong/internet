@@ -1,0 +1,224 @@
+<div class="row justify-content-center">
+    <div class="col-12 col-xl-10 col-xxl-8">
+        <section class="form-section">
+            <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-3">
+                <div>
+                    <h1 class="h4 mb-1"><i class="fa-solid fa-pen-nib me-2 text-primary"></i>发布文章</h1>
+                    <p class="text-muted mb-0">填写标题、分类与正文，后续可在权限设置中配置 VIP 或加密访问。</p>
+                </div>
+                <a class="btn btn-outline-secondary" href="/profile">
+                    <i class="fa-regular fa-id-card me-1"></i>返回个人中心
+                </a>
+            </div>
+            {message_block}
+            <form method="post" action="/posts/new" class="needs-validation" novalidate>
+                <div class="mb-3">
+                    <label for="post-title" class="form-label">文章标题</label>
+                    <input type="text" class="form-control" id="post-title" name="title" placeholder="请输入文章标题" required value="{title_value}">
+                </div>
+                <div class="row g-3">
+                    <div class="col-12 col-lg-6">
+                        <label for="post-category" class="form-label">选择已有分类</label>
+                        <select id="post-category" class="form-select" name="category">
+                            {category_options}
+                        </select>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <label for="post-category-custom" class="form-label">或新建分类</label>
+                        <input type="text" class="form-control" id="post-category-custom" name="category_custom" placeholder="输入新分类名称" value="{category_value}">
+                    </div>
+                </div>
+                <div class="mb-2 mt-3">
+                    <label class="form-label">正文内容</label>
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                        <small class="text-muted">支持富文本格式，想要实时预览请使用对照编辑模式</small>
+                        <button type="button" class="btn btn-outline-primary btn-sm" data-contrast-open>
+                            <i class="fa-solid fa-columns me-1"></i>对照编辑
+                        </button>
+                    </div>
+                    <div class="rich-editor-shell">
+                        <div class="quill-editor-wrapper">
+                            <div id="rich-editor-toolbar" class="ql-toolbar ql-snow rounded-top">
+                                <span class="ql-formats">
+                                    <select class="ql-font"></select>
+                                    <select class="ql-size"></select>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-bold" type="button"></button>
+                                    <button class="ql-italic" type="button"></button>
+                                    <button class="ql-underline" type="button"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <select class="ql-color"></select>
+                                    <select class="ql-background"></select>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-align" type="button"></button>
+                                    <button class="ql-align" value="center" type="button"></button>
+                                    <button class="ql-align" value="right" type="button"></button>
+                                    <button class="ql-align" value="justify" type="button"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-list" value="ordered" type="button"></button>
+                                    <button class="ql-list" value="bullet" type="button"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-link" type="button"></button>
+                                    <button class="ql-image" type="button"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-clean" type="button"></button>
+                                    <button class="ql-undo" type="button">
+                                        <i class="fa-solid fa-rotate-left"></i>
+                                    </button>
+                                    <button class="ql-redo" type="button">
+                                        <i class="fa-solid fa-rotate-right"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <div id="rich-editor" class="ql-container ql-snow rounded-bottom" aria-label="文章富文本编辑区域"></div>
+                            <textarea id="post-content" class="form-control d-none" name="content" data-editor-input required>{content_value}</textarea>
+                        </div>
+                    </div>
+                    <div class="editor-preview mt-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h2 class="h6 mb-0"><i class="fa-solid fa-desktop me-1 text-primary"></i>实时预览</h2>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" data-preview-toggle>显示预览</button>
+                        </div>
+                        <div class="editor-preview-pane d-none" data-editor-preview>
+                            <p class="text-muted mb-0">开始输入内容后，可在此查看最终效果。</p>
+                        </div>
+                    </div>
+                </div>
+                <hr class="my-4">
+                <div class="row g-3">
+                    <div class="col-12 col-lg-6">
+                        <label for="permission-type" class="form-label">访问权限</label>
+                        <select id="permission-type" class="form-select" name="permission_type">
+                            <option value="public" {permission_public_selected}>公开（默认）</option>
+                            <option value="vip" {permission_vip_selected}>VIP 专属</option>
+                            <option value="password" {permission_password_selected}>密码保护</option>
+                            <option value="private" {permission_private_selected}>仅作者可见</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <label for="password-hint" class="form-label">访问提示</label>
+                        <input type="text" id="password-hint" class="form-control" name="password_hint" placeholder="可选，访问密码提示" value="{password_hint_value}">
+                    </div>
+                </div>
+                <div class="row g-3 align-items-end mt-1">
+                    <div class="col-12 col-lg-6" data-role="password-field">
+                        <label for="access-password" class="form-label">访问密码</label>
+                        <input type="password" id="access-password" class="form-control" name="access_password" placeholder="仅当选择密码保护时填写">
+                        <div class="form-text">安全提示：系统会对密码进行哈希存储。</div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="form-check form-switch mt-3 mt-lg-0">
+                            <input class="form-check-input" type="checkbox" id="allow-comments" name="allow_comments" {allow_comments_checked}>
+                            <label class="form-check-label" for="allow-comments">允许读者评论</label>
+                        </div>
+                        <div class="form-check form-switch mt-2">
+                            <input class="form-check-input" type="checkbox" id="is-encrypted" name="is_encrypted" {is_encrypted_checked}>
+                            <label class="form-check-label" for="is-encrypted">加密存储正文（实验性）</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-grid d-md-flex gap-2 justify-content-md-end mt-4">
+                    <a class="btn btn-outline-secondary" href="/profile">
+                        <i class="fa-regular fa-circle-left me-1"></i>返回个人中心
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-paper-plane-top me-1"></i>发布文章
+                    </button>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+
+<script type="text/x-template" id="contrast-editor-template">
+    <div :class="['contrast-editor-modal', modalClassList]" role="dialog" aria-modal="true" v-cloak>
+        <div class="contrast-editor-backdrop" @click="closeModal"></div>
+        <div class="contrast-editor-dialog" ref="modalBody" @click.stop>
+            <header class="contrast-editor-header">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-columns text-primary"></i>
+                    <h2>对照编辑模式</h2>
+                </div>
+                <div class="d-flex flex-wrap gap-2 contrast-editor-mode-group">
+                    <button type="button" class="btn btn-sm" :class="activeMode === 'word' ? 'btn-primary' : 'btn-outline-primary'" @click="switchMode('word')">
+                        Word格式
+                    </button>
+                    <button type="button" class="btn btn-sm" :class="activeMode === 'markdown' ? 'btn-primary' : 'btn-outline-primary'" @click="switchMode('markdown')">
+                        Markdown格式
+                    </button>
+                    <button type="button" class="btn btn-sm" :class="activeMode === 'latex' ? 'btn-primary' : 'btn-outline-primary'" @click="switchMode('latex')">
+                        LaTeX格式
+                    </button>
+                </div>
+            </header>
+            <section class="contrast-editor-body">
+                <div class="contrast-editor-pane" :style="leftPaneStyle">
+                    <div v-if="activeMode === 'word'" class="contrast-editor-word">
+                        <div class="ql-toolbar ql-snow contrast-word-toolbar" ref="wordToolbar">
+                            <span class="ql-formats">
+                                <select class="ql-font"></select>
+                                <select class="ql-size"></select>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-bold" type="button"></button>
+                                <button class="ql-italic" type="button"></button>
+                                <button class="ql-underline" type="button"></button>
+                                <button class="ql-strike" type="button"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <select class="ql-color"></select>
+                                <select class="ql-background"></select>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-align" type="button"></button>
+                                <button class="ql-align" value="center" type="button"></button>
+                                <button class="ql-align" value="right" type="button"></button>
+                                <button class="ql-align" value="justify" type="button"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-list" value="ordered" type="button"></button>
+                                <button class="ql-list" value="bullet" type="button"></button>
+                                <button class="ql-indent" value="-1" type="button"></button>
+                                <button class="ql-indent" value="+1" type="button"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-link" type="button"></button>
+                                <button class="ql-image" type="button"></button>
+                                <button class="ql-blockquote" type="button"></button>
+                                <button class="ql-code-block" type="button"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-clean" type="button"></button>
+                            </span>
+                        </div>
+                        <div class="ql-container ql-snow contrast-word-editor" ref="wordEditor"></div>
+                    </div>
+                    <textarea v-else-if="activeMode === 'markdown'" ref="markdownEditor"></textarea>
+                    <textarea v-else ref="latexEditor"></textarea>
+                </div>
+                <div class="contrast-divider" role="separator" aria-orientation="vertical" @mousedown="startDrag"></div>
+                <div class="contrast-preview-pane" :style="rightPaneStyle" ref="previewPane">
+                    <div class="contrast-preview-content" ref="previewContent" v-html="previewHtml"></div>
+                </div>
+            </section>
+            <footer class="contrast-editor-footer">
+                <span class="text-muted small">输入内容即时预览，可随时退出返回简易编辑模式。</span>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" @click="renderPreview">
+                        <i class="fa-solid fa-rotate-right me-1"></i>重新渲染
+                    </button>
+                    <button type="button" class="btn btn-primary btn-sm" @click="closeModal">
+                        <i class="fa-solid fa-up-right-and-down-left-from-center me-1"></i>退出全屏
+                    </button>
+                </div>
+            </footer>
+        </div>
+    </div>
+</script>
+<div id="contrastEditorApp"></div>
