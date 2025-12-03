@@ -117,13 +117,21 @@ class TemplateRenderer:
             return file_handler.read()
 
     def _format_template(self, template: str, context: Dict[str, Any]) -> str:
-        safe_context: Dict[str, Any] = {}
+        # 方案：不使用 template.format()，因为它会解析 CSS 中的 {}
+        # 改为手动循环 replace，虽然效率低一点，但绝对安全，不会因为 CSS 报错
+        
+        result = template
         for key, value in context.items():
-            if isinstance(value, str) and key not in self.RAW_KEYS:
-                safe_context[key] = value.replace("{", "{{").replace("}", "}}")
-            else:
-                safe_context[key] = value
-        return template.format(**safe_context)
+            # 构造占位符，例如 {page_title}
+            placeholder = "{" + key + "}"
+            
+            # 如果值是 None，转为空字符串
+            val_str = str(value) if value is not None else ""
+            
+            # 直接替换
+            result = result.replace(placeholder, val_str)
+            
+        return result
 
     def _template_not_found_response(self, template_name: str) -> HTTPResponse:
         message = f"Template {template_name} not found".encode("utf-8")
@@ -1315,15 +1323,35 @@ class ArticleHandlers(BaseHandler):
         post = self.posts.get_post_by_id(post_id)
         if post is None:
             return self._build_not_found()
+
         user = self.get_current_user(request)
+        
+        # === [新增] 获取 Cookie 中的解锁状态 ===
         password_cookie_key = f"post_access_{post_id}"
         has_password_access = request.get_cookies().get(password_cookie_key) == "granted"
+        
         query_params = request.get_query_params()
         error_message = query_params.get("error", "")
-        if not self.posts.can_view_post(post, user, has_password_access):
-            return self._render_permission_required(post, user, error_message)
+
+        # === [修改] 权限检查逻辑：区分“彻底无权”和“待解锁” ===
+        can_view = self.posts.can_view_post(post, user, has_password_access)
+        is_locked_content = False
+
+        if not can_view:
+            # 获取权限类型
+            permission_type = post.get("security", {}).get("permission_type", "public")
+            
+            # 如果是密码保护类型，我们不直接拒绝，而是标记为“内容锁定”
+            # 这样用户仍然可以访问页面，看到标题，但内容会变成输入框
+            if permission_type == "password":
+                is_locked_content = True
+            else:
+                # 其他情况（如 private, vip）仍然显示无权访问页面
+                return self._render_permission_required(post, user, error_message)
+
         like_count = self.interactions.count_likes(post_id)
         favorite_count = self.interactions.count_favorites(post_id)
+        
         delete_button_html = ""
         if user and self.posts.is_author(post, user):
             escaped_post_id = html.escape(post_id)
@@ -1335,6 +1363,7 @@ class ArticleHandlers(BaseHandler):
                 '</button>'
                 '</form>'
             )
+
         if user:
             liked = post_id in self.interactions.list_like_post_ids(user["id"])
             favorited = post_id in self.interactions.list_favorite_post_ids(user["id"])
@@ -1349,11 +1378,12 @@ class ArticleHandlers(BaseHandler):
                 '请先 <a href="/login" class="alert-link">登录</a> 后发表评论。'
                 "</div>"
             )
+
         comment_data = self.comments.list_nested_comments(post_id)
         comments_html = self._build_comment_list(comment_data)
         author_context = self._build_author_context(post, user)
+        
         feedback_html = ""
-        query_params = request.get_query_params()
         if query_params.get("subscribed") == "1":
             feedback_html = (
                 '<div class="alert alert-success d-flex align-items-center gap-2" role="alert">'
@@ -1361,13 +1391,38 @@ class ArticleHandlers(BaseHandler):
                 '<span>已订阅该作者，后续新文章将通过通知提醒你。</span>'
                 "</div>"
             )
+
+        # === [新增] 根据锁定状态生成内容 HTML ===
+        if is_locked_content:
+            # 渲染解锁表单
+            post_content_html = f"""
+            <div class="card border-warning mb-3" style="max-width: 30rem; margin: 2rem auto;">
+                <div class="card-header bg-warning text-dark fw-bold">
+                    <i class="fa-solid fa-lock me-2"></i>内容已加密
+                </div>
+                <div class="card-body text-center">
+                    <p class="card-text">该文章受古老咒语保护，请输入密码解锁。</p>
+                    <form class="post-unlock-form" data-post-id="{post['id']}">
+                        <div class="input-group mb-3">
+                            <input type="password" name="password" class="form-control" placeholder="请输入密码..." required>
+                            <button class="btn btn-dark" type="submit">解封</button>
+                        </div>
+                        <div class="unlock-error text-danger small" style="display:none;"></div>
+                    </form>
+                </div>
+            </div>
+            """
+        else:
+            # 正常渲染内容
+            post_content_html = self._format_content(post.get("content", ""), allow_html=True)
+
         context = {
             "page_title": post["title"],
             "page_description": self._excerpt(post.get("content", "")),
             "post_title": html.escape(post["title"]),
             "post_category": html.escape(post.get("category", "未分类") or "未分类"),
             "post_created_at": html.escape(self._format_timestamp(post.get("created_at"))),
-            "post_content_html": self._format_content(post.get("content", ""), allow_html=True),
+            "post_content_html": post_content_html,  # 使用根据权限生成的 HTML
             "like_count": str(like_count),
             "favorite_count": str(favorite_count),
             "comment_list_html": comments_html,
@@ -1387,7 +1442,6 @@ class ArticleHandlers(BaseHandler):
         context.update(author_context)
         context.update(self._layout_context(None, user))
         return self.renderer.render("post.html", context)
-
     def add_comment(self, request: HTTPRequest, post_id: str) -> HTTPResponse:
         user = self.get_current_user(request)
         if not user:

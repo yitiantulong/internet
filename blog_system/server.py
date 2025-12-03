@@ -13,6 +13,7 @@ from api_handlers import (
     SubscriptionAPI as SubscriptionAPIHandler,
     MessageAPI as MessageAPIHandler,
     PerformanceAPI,
+    PokemonAPI
 )
 from database import get_database
 from auth import AuthService
@@ -26,7 +27,7 @@ from models.metric import PerformanceMetricModel
 from models.privacy import PrivacyModel
 from http_types import HTTPRequest, HTTPResponse
 from session import SessionManager
-
+from models.pokemon import PokemonModel
 
 
 
@@ -87,6 +88,8 @@ class HTTPServer:
         self.message_api = MessageAPIHandler(self.auth_service, self.message_model, self.user_model)
         self.performance_api = PerformanceAPI(self.auth_service, self.metrics_model)
         self._request_counter = 0
+        self.pokemon_model = PokemonModel(self.database)
+        self.pokemon_api = PokemonAPI(self.auth_service, self.pokemon_model)
         self._seed_demo_content()
         self._configure_routes()
 
@@ -136,7 +139,16 @@ class HTTPServer:
         self.router.add_route("/api/messages/<target_username>", "GET", self.message_api.get_conversation)
         self.router.add_route("/api/performance/metrics", "GET", self.performance_api.list_metrics)
         self.router.add_route("/api/performance/metrics", "POST", self.performance_api.record_metric)
+        # === 功能 1：文章密码解锁 ===
+        # 配合前端 POST /api/posts/<id>/unlock
+        self.router.add_route("/api/posts/<post_id>/unlock", "POST", self.post_api.unlock)
 
+        # === 功能 3：宝可梦互动 ===
+        self.router.add_route("/api/pokemon/status", "GET", self.pokemon_api.get_status)
+        self.router.add_route("/api/pokemon/interact", "POST", self.pokemon_api.interact)
+
+        # === 功能 2：网络性能 (已在原代码的 /api/performance/metrics 中，这里确保前端能调到) ===
+        # 原代码已包含: self.router.add_route("/api/performance/metrics", "GET", self.performance_api.list_metrics)
     def serve_static(self, path: str) -> Optional[HTTPResponse]:
         normalized = os.path.normpath(path).lstrip("/")
         absolute_path = os.path.join(self.static_root, normalized)
@@ -284,6 +296,28 @@ class HTTPServer:
                 "在雨夜里与灵感共舞的十个瞬间",
             ]
         )
+        # === [修改] 植入特定的加密文章 ===
+        # 检查是否已存在，不存在则创建
+        encrypted_title = "【机密】只有有缘人能看"
+        if self.post_model.find_post_by_title(encrypted_title) is None:
+            # 获取用户ID (假设 demo_username 已创建)
+            user = self.user_model.get_user_by_username("handsome_slash")
+            if user:
+                self.post_model.create_post(
+                    author_id=user["id"],
+                    title=encrypted_title,
+                    content="<p>你解开了封印！<br/>唵嘛呢叭咪吽（OM MANI PADME HUM）<br/>这是实验要求的加密内容。</p>",
+                    summary="这是一篇被古老咒语封印的文章...",
+                    category="Secret",
+                    tags=["Buddhism", "Code"],
+                    cover_image=None,
+                    permission_type="password", # 设置为密码保护
+                    password_hint="佛教六字真言",
+                    password="六字大明咒",      # 设置指定密码
+                    allow_comments=True,
+                    is_encrypted=True
+                )
+                print(f"[Demo] Created encrypted post: {encrypted_title}")
         sample_posts: List[Dict[str, str]] = []
         for post in sample_posts:
             if self.post_model.find_post_by_title(post["title"]) is not None:

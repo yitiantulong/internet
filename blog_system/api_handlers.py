@@ -11,7 +11,7 @@ from models.subscription import SubscriptionModel
 from models.message import MessageModel
 from models.user import UserModel
 from models.metric import PerformanceMetricModel
-
+from models.pokemon import PokemonModel
 
 HTTP_STATUS_MESSAGES = {
     200: "OK",
@@ -172,6 +172,29 @@ class PostAPI(BaseAPI):
             is_encrypted=is_encrypted,
         )
         return json_response({"success": True})
+    def unlock(self, request: HTTPRequest, post_id: str) -> HTTPResponse:
+        """
+        处理文章解锁请求，验证密码并设置 Cookie
+        """
+        # 解析请求体
+        data = request.get_json()
+        if not data or "password" not in data:
+            return error_response("请输入密码", status=400)
+        
+        password = data["password"].strip()
+        
+        # 调用 Model 层验证密码
+        if self.posts.verify_post_password(post_id, password):
+            # 密码正确
+            response = json_response({"success": True, "message": "解锁成功"})
+            
+            # 关键修复：设置 Cookie，Path 设置为 / 以便全局有效（或特定路径）
+            # Max-Age: 86400秒 (1天)
+            response.set_cookie(f"post_access_{post_id}", "granted", path="/", max_age=86400)
+            
+            return response
+        else:
+            return error_response("密码错误 (提示：密码可能是六字大明咒)", status=403)
 
     def toggle_like(self, request: HTTPRequest, post_id: str) -> HTTPResponse:
         user = self._get_user(request)
@@ -496,4 +519,21 @@ class PerformanceAPI(BaseAPI):
         if maximum is not None and parsed > maximum:
             parsed = maximum
         return parsed
+    
+class PokemonAPI(BaseAPI):
+    def __init__(self, auth_service: AuthService, pokemon_model: PokemonModel) -> None:
+        super().__init__(auth_service)
+        self.pokemon = pokemon_model
+
+    def get_status(self, request: HTTPRequest) -> HTTPResponse:
+        stats = self.pokemon.get_global_stats()
+        return json_response({"success": True, "stats": stats})
+
+    def interact(self, request: HTTPRequest) -> HTTPResponse:
+        # 可以选择是否验证登录，这里做成公开互动
+        user = self._get_user(request) 
+        user_id = user["id"] if user else None
+        
+        new_stats = self.pokemon.interact(user_id)
+        return json_response({"success": True, "stats": new_stats, "message": "Pika Pika!"})
 

@@ -190,6 +190,20 @@ class Database:
                 CREATE INDEX IF NOT EXISTS idx_messages_users ON messages(sender_id, receiver_id)
                 """
             )
+            # === 新增：宝可梦互动组件表 ===
+            cursor.execute(
+                """
+                CREATE TABLE IF NOT EXISTS pokemon_interactions (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER,
+                    interaction_type TEXT NOT NULL,
+                    count INTEGER DEFAULT 0,
+                    last_interacted_at TEXT
+                )
+                """
+            )
+            # 初始化一个全局计数器（如果不存在）
+            cursor.execute("INSERT OR IGNORE INTO pokemon_interactions (id, interaction_type, count) VALUES (1, 'global_pats', 0)")
             connection.commit()
 
     def get_connection(self) -> sqlite3.Connection:
